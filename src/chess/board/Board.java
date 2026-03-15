@@ -3,8 +3,15 @@ package chess.board;
 import chess.Color;
 import chess.pieces.*;
 
+/*
+ Representa o tabuleiro de xadrez.
+ Gerencia as 64 casas (8x8) e o posicionamento inicial das peças.
+ */
+
 public class Board {
 
+    // Array bidimensional 8x8 que representa as casas do tabuleiro
+    // Cada posição guarda uma peça ou null se a casa estiver vazia
     private Piece[][] squares;
 
     public Board() {
@@ -45,6 +52,11 @@ public class Board {
     public Piece getPiece(int row, int col) {
         return squares[row][col];
     }
+
+    /*
+     Imprime o tabuleiro no console com as peças nas suas posições.
+     Casas vazias são representadas por '.'
+     */
 
     public void print() {
         System.out.println("  a  b  c  d  e  f  g  h");
