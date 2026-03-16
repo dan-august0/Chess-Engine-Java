@@ -1,12 +1,10 @@
 package chess.pieces;
 
 import chess.Color;
-
-/*
- Representa o Rei no jogo de xadrez;
- Movimento: será implementado na Fase 2.
- O Rei é a peça mais importante — se ele for capturado, o jogo acaba.
- */
+import chess.Position;
+import chess.board.Board;
+import java.util.ArrayList;
+import java.util.List;
 
 public class King extends Piece {
 
@@ -17,5 +15,38 @@ public class King extends Piece {
     @Override
     public String getSymbol() {
         return color == Color.WHITE ? "♔" : "♚";
+    }
+
+    @Override
+    public List<Position> getLegalMoves(Board board) {
+        List<Position> moves = new ArrayList<>();
+
+        int[][] directions = {
+            {-1,  0},
+            { 1,  0},
+            { 0, -1},
+            { 0,  1},
+            {-1, -1},
+            {-1,  1},
+            { 1, -1},
+            { 1,  1}
+        };
+
+        for (int[] dir : directions) {
+            int r = row + dir[0];
+            int c = col + dir[1];
+
+            Position pos = new Position(r, c);
+
+            if (pos.isValid()) {
+                Piece target = board.getPiece(r, c);
+
+                if (target == null || target.getColor() != this.color) {
+                    moves.add(pos);
+                }
+            }
+        }
+
+        return moves;
     }
 }
