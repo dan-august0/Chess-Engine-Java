@@ -80,6 +80,13 @@ public class Board {
         piece.setPosition(to.getRow(), to.getCol());
     }
 
+    public void undoMove(Position from, Position to, Piece piece, Piece captured) {
+        squares[from.getRow()][from.getCol()] = piece;
+        squares[to.getRow()][to.getCol()] = captured;
+        piece.setPosition(from.getRow(), from.getCol());
+    }
+
+
     /**
      * Verifica se o Rei de uma determinada cor ainda está vivo.
      * Usada para detectar fim de jogo.
