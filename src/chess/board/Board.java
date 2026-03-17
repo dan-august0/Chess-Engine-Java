@@ -1,17 +1,11 @@
 package chess.board;
 
 import chess.Color;
+import chess.Position;
 import chess.pieces.*;
-
-/*
- Representa o tabuleiro de xadrez.
- Gerencia as 64 casas (8x8) e o posicionamento inicial das peças.
- */
 
 public class Board {
 
-    // Array bidimensional 8x8 que representa as casas do tabuleiro
-    // Cada posição guarda uma peça ou null se a casa estiver vazia
     private Piece[][] squares;
 
     public Board() {
@@ -20,7 +14,6 @@ public class Board {
     }
 
     private void setup() {
-        // Peças pretas
         squares[0][0] = new Rook(Color.BLACK, 0, 0);
         squares[0][1] = new Knight(Color.BLACK, 0, 1);
         squares[0][2] = new Bishop(Color.BLACK, 0, 2);
@@ -34,7 +27,6 @@ public class Board {
             squares[1][col] = new Pawn(Color.BLACK, 1, col);
         }
 
-        // Peças brancas
         squares[7][0] = new Rook(Color.WHITE, 7, 0);
         squares[7][1] = new Knight(Color.WHITE, 7, 1);
         squares[7][2] = new Bishop(Color.WHITE, 7, 2);
@@ -53,10 +45,24 @@ public class Board {
         return squares[row][col];
     }
 
-    /*
-     Imprime o tabuleiro no console com as peças nas suas posições.
-     Casas vazias são representadas por '.'
-     */
+    public void movePiece(Position from, Position to) {
+        Piece piece = squares[from.getRow()][from.getCol()];
+        squares[to.getRow()][to.getCol()] = piece;
+        squares[from.getRow()][from.getCol()] = null;
+        piece.setPosition(to.getRow(), to.getCol());
+    }
+
+    public boolean isKingAlive(Color color) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece instanceof King && piece.getColor() == color) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public void print() {
         System.out.println("  a  b  c  d  e  f  g  h");
