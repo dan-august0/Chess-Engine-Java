@@ -28,11 +28,21 @@ public class GameLoop {
             board.print();
             System.out.println("\nTurno: " + (currentTurn == Color.WHITE ? "BRANCAS" : "PRETAS"));
 
+            if (board.isInCheck(currentTurn)) {
+                System.out.println("⚠️  XEQUE! Seu Rei está em perigo!");
+            }
+
+            if (board.isCheckmate(currentTurn)) {
+                Color winner = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
+                System.out.println("\n♛ XEQUE-MATE! " + (winner == Color.WHITE ? "BRANCAS" : "PRETAS") + " VENCERAM!");
+                break;
+            }
+
             if (vsAI && currentTurn == Color.BLACK) {
                 System.out.println("IA está pensando...");
                 ai.makeMove(board);
 
-                if (!board.isKingAlive(Color.WHITE)) {
+                if (board.isCheckmate(Color.WHITE)) {
                     board.print();
                     System.out.println("\n♛ XEQUE-MATE! PRETAS VENCERAM!");
                     break;
@@ -90,9 +100,17 @@ public class GameLoop {
                 continue;
             }
 
+            // Simula o movimento e verifica se deixa o Rei em xeque
+            Piece captured = board.getPiece(to.getRow(), to.getCol());
             board.movePiece(from, to);
 
-            if (!board.isKingAlive(currentTurn == Color.WHITE ? Color.BLACK : Color.WHITE)) {
+            if (board.isInCheck(currentTurn)) {
+                board.undoMove(from, to, piece, captured);
+                System.out.println("Movimento inválido! Seu Rei ficaria em xeque!");
+                continue;
+            }
+
+            if (board.isCheckmate(currentTurn == Color.WHITE ? Color.BLACK : Color.WHITE)) {
                 board.print();
                 System.out.println("\n♛ XEQUE-MATE! " + (currentTurn == Color.WHITE ? "BRANCAS" : "PRETAS") + " VENCERAM!");
                 break;

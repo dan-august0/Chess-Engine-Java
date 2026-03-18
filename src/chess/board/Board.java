@@ -3,32 +3,17 @@ package chess.board;
 import chess.Color;
 import chess.Position;
 import chess.pieces.*;
+import java.util.List;
 
-/**
- * Representa o tabuleiro de xadrez.
- * Gerencia as 64 casas (8x8), o posicionamento inicial das peças,
- * a movimentação e a verificação de fim de jogo.
- */
 public class Board {
 
-    // Array bidimensional 8x8 que representa as casas do tabuleiro
-    // Cada posição guarda uma peça ou null se a casa estiver vazia
     private Piece[][] squares;
 
-    /**
-     * Construtor do tabuleiro.
-     * Inicializa o array e posiciona todas as peças.
-     */
     public Board() {
         squares = new Piece[8][8];
         setup();
     }
 
-    /**
-     * Posiciona todas as peças nas suas posições iniciais.
-     * Linha 0 = peças pretas, linha 1 = peões pretos
-     * Linha 6 = peões brancos, linha 7 = peças brancas
-     */
     private void setup() {
         squares[0][0] = new Rook(Color.BLACK, 0, 0);
         squares[0][1] = new Knight(Color.BLACK, 0, 1);
@@ -57,22 +42,10 @@ public class Board {
         }
     }
 
-    /**
-     * Retorna a peça em uma determinada posição do tabuleiro.
-     * @param row Linha (0 a 7)
-     * @param col Coluna (0 a 7)
-     * @return A peça na posição ou null se estiver vazia
-     */
     public Piece getPiece(int row, int col) {
         return squares[row][col];
     }
 
-    /**
-     * Move uma peça de uma posição para outra.
-     * Se houver uma peça inimiga no destino ela é capturada.
-     * @param from Posição de origem
-     * @param to   Posição de destino
-     */
     public void movePiece(Position from, Position to) {
         Piece piece = squares[from.getRow()][from.getCol()];
         squares[to.getRow()][to.getCol()] = piece;
@@ -86,13 +59,6 @@ public class Board {
         piece.setPosition(from.getRow(), from.getCol());
     }
 
-
-    /**
-     * Verifica se o Rei de uma determinada cor ainda está vivo.
-     * Usada para detectar fim de jogo.
-     * @param color Cor do Rei a verificar
-     * @return true se o Rei estiver no tabuleiro, false se foi capturado
-     */
     public boolean isKingAlive(Color color) {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -105,10 +71,64 @@ public class Board {
         return false;
     }
 
-    /**
-     * Imprime o tabuleiro no console com as peças nas suas posições.
-     * Casas vazias são representadas por '.'
-     */
+    public boolean isInCheck(Color color) {
+        int kingRow = -1;
+        int kingCol = -1;
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece instanceof King && piece.getColor() == color) {
+                    kingRow = row;
+                    kingCol = col;
+                }
+            }
+        }
+
+        Color opponent = (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece == null || piece.getColor() != opponent) continue;
+
+                List<Position> moves = piece.getLegalMoves(this);
+                for (Position move : moves) {
+                    if (move.getRow() == kingRow && move.getCol() == kingCol) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isCheckmate(Color color) {
+        if (!isInCheck(color)) return false;
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = squares[row][col];
+                if (piece == null || piece.getColor() != color) continue;
+
+                List<Position> moves = piece.getLegalMoves(this);
+                for (Position to : moves) {
+                    Position from = new Position(row, col);
+                    Piece captured = squares[to.getRow()][to.getCol()];
+
+                    movePiece(from, to);
+                    boolean stillInCheck = isInCheck(color);
+                    undoMove(from, to, piece, captured);
+
+                    if (!stillInCheck) return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public void print() {
         System.out.println("  a  b  c  d  e  f  g  h");
         for (int row = 0; row < 8; row++) {
