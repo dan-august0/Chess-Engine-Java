@@ -8,9 +8,11 @@ import java.util.List;
 public class Board {
 
     private Piece[][] squares;
+    private Pawn enPassantTarget;
 
     public Board() {
         squares = new Piece[8][8];
+        enPassantTarget = null;
         setup();
     }
 
@@ -46,25 +48,40 @@ public class Board {
         return squares[row][col];
     }
 
+    public Pawn getEnPassantTarget() {
+        return enPassantTarget;
+    }
+
     public void movePiece(Position from, Position to) {
         Piece piece = squares[from.getRow()][from.getCol()];
 
+        // Reseta o en passant a cada movimento
+        enPassantTarget = null;
+
         // Verifica se é roque
         if (piece instanceof King && Math.abs(to.getCol() - from.getCol()) == 2) {
-            // Roque pequeno
             if (to.getCol() == 6) {
                 Piece rook = squares[from.getRow()][7];
                 squares[from.getRow()][5] = rook;
                 squares[from.getRow()][7] = null;
                 rook.setPosition(from.getRow(), 5);
             }
-            // Roque grande
             if (to.getCol() == 2) {
                 Piece rook = squares[from.getRow()][0];
                 squares[from.getRow()][3] = rook;
                 squares[from.getRow()][0] = null;
                 rook.setPosition(from.getRow(), 3);
             }
+        }
+
+        // Verifica se é en passant
+        if (piece instanceof Pawn && from.getCol() != to.getCol() && squares[to.getRow()][to.getCol()] == null) {
+            squares[from.getRow()][to.getCol()] = null;
+        }
+
+        // Verifica se Peão avançou 2 casas
+        if (piece instanceof Pawn && Math.abs(to.getRow() - from.getRow()) == 2) {
+            enPassantTarget = (Pawn) piece;
         }
 
         squares[to.getRow()][to.getCol()] = piece;
