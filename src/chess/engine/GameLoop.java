@@ -52,7 +52,7 @@ public class GameLoop {
                 continue;
             }
 
-            System.out.print("Digite o movimento (ex: e2 e4): ");
+            System.out.print("Digite o movimento (ex: e2 e4) ou (0-0 / 0-0-0 para roque): ");
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("sair")) {
@@ -60,17 +60,31 @@ public class GameLoop {
                 break;
             }
 
-            if (!isValidInput(input)) {
-                System.out.println("Formato inválido! Use o formato: e2 e4");
-                continue;
-            }
+            Position from = null;
+            Position to = null;
 
-            Position from = parsePosition(input.split(" ")[0]);
-            Position to = parsePosition(input.split(" ")[1]);
+            // Notação oficial de roque
+            if (input.equals("0-0")) {
+                int row = (currentTurn == Color.WHITE) ? 7 : 0;
+                from = new Position(row, 4);
+                to = new Position(row, 6);
+            } else if (input.equals("0-0-0")) {
+                int row = (currentTurn == Color.WHITE) ? 7 : 0;
+                from = new Position(row, 4);
+                to = new Position(row, 2);
+            } else {
+                if (!isValidInput(input)) {
+                    System.out.println("Formato inválido! Use o formato: e2 e4");
+                    continue;
+                }
 
-            if (from == null || to == null) {
-                System.out.println("Posição inválida! Use letras de a-h e números de 1-8.");
-                continue;
+                from = parsePosition(input.split(" ")[0]);
+                to = parsePosition(input.split(" ")[1]);
+
+                if (from == null || to == null) {
+                    System.out.println("Posição inválida! Use letras de a-h e números de 1-8.");
+                    continue;
+                }
             }
 
             Piece piece = board.getPiece(from.getRow(), from.getCol());

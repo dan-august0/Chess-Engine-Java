@@ -6,11 +6,6 @@ import chess.board.Board;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Representa o Rei no jogo de xadrez.
- * O Rei é a peça mais importante — se for capturado o jogo acaba.
- * Move-se em qualquer direção mas apenas 1 casa por vez.
- */
 public class King extends Piece {
 
     public King(Color color, int row, int col) {
@@ -26,16 +21,11 @@ public class King extends Piece {
     public List<Position> getLegalMoves(Board board) {
         List<Position> moves = new ArrayList<>();
 
-        // As 8 direções possíveis — igual a Rainha mas só 1 casa
         int[][] directions = {
-            {-1,  0},
-            { 1,  0},
-            { 0, -1},
-            { 0,  1},
-            {-1, -1},
-            {-1,  1},
-            { 1, -1},
-            { 1,  1}
+            {-1,  0}, { 1,  0},
+            { 0, -1}, { 0,  1},
+            {-1, -1}, {-1,  1},
+            { 1, -1}, { 1,  1}
         };
 
         for (int[] dir : directions) {
@@ -44,13 +34,40 @@ public class King extends Piece {
 
             Position pos = new Position(r, c);
 
-            // Verifica apenas 1 casa em cada direção
             if (pos.isValid()) {
                 Piece target = board.getPiece(r, c);
-
-                // Pode mover se a casa estiver vazia ou tiver peça inimiga
                 if (target == null || target.getColor() != this.color) {
                     moves.add(pos);
+                }
+            }
+        }
+
+        // Roque pequeno
+        if (!hasMoved) {
+            Piece rookKingSide = board.getPiece(row, 7);
+            if (rookKingSide instanceof Rook && !rookKingSide.hasMoved()) {
+                if (board.getPiece(row, 5) == null && board.getPiece(row, 6) == null) {
+                    if (!board.isInCheck(color) &&
+                        !board.isSquareAttacked(row, 5, color) &&
+                        !board.isSquareAttacked(row, 6, color)) {
+                        moves.add(new Position(row, 6));
+                    }
+                }
+            }
+        }
+
+        // Roque grande
+        if (!hasMoved) {
+            Piece rookQueenSide = board.getPiece(row, 0);
+            if (rookQueenSide instanceof Rook && !rookQueenSide.hasMoved()) {
+                if (board.getPiece(row, 1) == null &&
+                    board.getPiece(row, 2) == null &&
+                    board.getPiece(row, 3) == null) {
+                    if (!board.isInCheck(color) &&
+                        !board.isSquareAttacked(row, 2, color) &&
+                        !board.isSquareAttacked(row, 3, color)) {
+                        moves.add(new Position(row, 2));
+                    }
                 }
             }
         }

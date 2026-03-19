@@ -48,6 +48,25 @@ public class Board {
 
     public void movePiece(Position from, Position to) {
         Piece piece = squares[from.getRow()][from.getCol()];
+
+        // Verifica se é roque
+        if (piece instanceof King && Math.abs(to.getCol() - from.getCol()) == 2) {
+            // Roque pequeno
+            if (to.getCol() == 6) {
+                Piece rook = squares[from.getRow()][7];
+                squares[from.getRow()][5] = rook;
+                squares[from.getRow()][7] = null;
+                rook.setPosition(from.getRow(), 5);
+            }
+            // Roque grande
+            if (to.getCol() == 2) {
+                Piece rook = squares[from.getRow()][0];
+                squares[from.getRow()][3] = rook;
+                squares[from.getRow()][0] = null;
+                rook.setPosition(from.getRow(), 3);
+            }
+        }
+
         squares[to.getRow()][to.getCol()] = piece;
         squares[from.getRow()][from.getCol()] = null;
         piece.setPosition(to.getRow(), to.getCol());
@@ -65,6 +84,25 @@ public class Board {
                 Piece piece = squares[row][col];
                 if (piece instanceof King && piece.getColor() == color) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isSquareAttacked(int row, int col, Color color) {
+        Color opponent = (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Piece piece = squares[r][c];
+                if (piece == null || piece.getColor() != opponent) continue;
+
+                List<Position> moves = piece.getLegalMoves(this);
+                for (Position move : moves) {
+                    if (move.getRow() == row && move.getCol() == col) {
+                        return true;
+                    }
                 }
             }
         }
