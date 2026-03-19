@@ -2,6 +2,7 @@ package chess.pieces;
 
 import chess.Color;
 import chess.Position;
+import chess.TerminalUtils;
 import chess.board.Board;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,10 @@ public class King extends Piece {
 
     @Override
     public String getSymbol() {
-        return color == Color.WHITE ? "♔" : "♚";
+        if (TerminalUtils.isUnicodeSupported()) {
+            return color == Color.WHITE ? "♔" : "♚";
+        }
+        return color == Color.WHITE ? "K" : "k";
     }
 
     @Override
@@ -42,7 +46,6 @@ public class King extends Piece {
             }
         }
 
-        // Roque pequeno
         if (!hasMoved) {
             Piece rookKingSide = board.getPiece(row, 7);
             if (rookKingSide instanceof Rook && !rookKingSide.hasMoved()) {
@@ -56,7 +59,6 @@ public class King extends Piece {
             }
         }
 
-        // Roque grande
         if (!hasMoved) {
             Piece rookQueenSide = board.getPiece(row, 0);
             if (rookQueenSide instanceof Rook && !rookQueenSide.hasMoved()) {
