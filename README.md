@@ -37,7 +37,10 @@ cd Chess-Engine-Java
 mkdir bin
 
 # Compile
-javac -encoding UTF-8 -d bin src/chess/*.java src/chess/pieces/*.java src/chess/board/*.java src/chess/engine/*.java
+javac -encoding U#TF-8 -d bin src/chess/*.java src/chess/pieces/*.java src/chess/board/*.java src/chess/engine/*.java
+
+#Rodar com as peças 
+chcp 65001
 
 # Rode
 java -cp bin chess.Main
